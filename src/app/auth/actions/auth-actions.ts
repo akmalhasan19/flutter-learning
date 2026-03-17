@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { trackEvent } from '@/lib/analytics/events'
 
 export async function login(formData: FormData) {
   const supabase = await createClient()
@@ -37,6 +38,8 @@ export async function signup(formData: FormData) {
   if (error) {
     redirect('/error')
   }
+
+  trackEvent('signup_completed', { email: data.email });
 
   revalidatePath('/', 'layout')
   redirect('/dashboard')

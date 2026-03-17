@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { trackEvent } from "@/lib/analytics/events";
 
 interface DartpadEmbedProps {
   gistId?: string;
@@ -14,7 +15,7 @@ export default function DartpadEmbed({ gistId, snippetId }: DartpadEmbedProps) {
 
   useEffect(() => {
     if (id) {
-      console.log(`Analytics event fired: Dartpad loaded for ID ${id}`);
+      trackEvent('dartpad_opened', { id });
     }
   }, [id]);
 

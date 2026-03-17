@@ -285,16 +285,16 @@ Deliverables:
 Dependencies: Task 7, Task 10
 
 Subtasks:
-- [ ] Definisikan aturan XP per lesson completion.
-- [ ] Definisikan aturan streak berdasarkan daily activity.
-- [ ] Definisikan rule badge untuk first lesson, module completion, dan streak milestone.
-- [ ] Buat server action untuk completion event yang authoritative.
-- [ ] Simpan event ke xp_events saat lesson selesai.
-- [ ] Update total_xp di profile atau lewat SQL function yang setara.
-- [ ] Update current_streak dan longest_streak.
-- [ ] Insert user_badges jika milestone terpenuhi.
-- [ ] Buat UI feedback seperti toast atau reward state setelah completion.
-- [ ] Pastikan event tidak bisa dipicu berulang untuk farming XP.
+- [x] Definisikan aturan XP per lesson completion.
+- [x] Definisikan aturan streak berdasarkan daily activity.
+- [x] Definisikan rule badge untuk first lesson, module completion, dan streak milestone.
+- [x] Buat server action untuk completion event yang authoritative.
+- [x] Simpan event ke xp_events saat lesson selesai.
+- [x] Update total_xp di profile atau lewat SQL function yang setara.
+- [x] Update current_streak dan longest_streak.
+- [x] Insert user_badges jika milestone terpenuhi.
+- [x] Buat UI feedback seperti toast atau reward state setelah completion.
+- [x] Pastikan event tidak bisa dipicu berulang untuk farming XP.
 
 ## Task 13 - Tambahkan Supabase Realtime untuk Feedback Live
 
@@ -307,13 +307,13 @@ Deliverables:
 Dependencies: Task 12
 
 Subtasks:
-- [ ] Tentukan channel realtime yang dibutuhkan.
-- [ ] Tentukan apakah memakai Postgres Changes atau broadcast untuk MVP.
-- [ ] Tambahkan subscription di komponen client yang relevan.
-- [ ] Update widget XP dan streak secara live setelah event baru masuk.
-- [ ] Update badge state secara live setelah badge diberikan.
-- [ ] Pastikan unsubscribe berjalan saat component unmount.
-- [ ] Uji behavior saat dua tab dibuka bersamaan.
+- [x] Tentukan channel realtime yang dibutuhkan.
+- [x] Tentukan apakah memakai Postgres Changes atau broadcast untuk MVP.
+- [x] Tambahkan subscription di komponen client yang relevan.
+- [x] Update widget XP dan streak secara live setelah event baru masuk.
+- [x] Update badge state secara live setelah badge diberikan.
+- [x] Pastikan unsubscribe berjalan saat component unmount.
+- [x] Uji behavior saat dua tab dibuka bersamaan.
 
 ## Task 14 - Implement Asset dan Video Storage Strategy
 
@@ -327,13 +327,13 @@ Deliverables:
 Dependencies: Task 5, Task 10
 
 Subtasks:
-- [ ] Tentukan bucket untuk thumbnails, illustrations, badges, dan videos.
-- [ ] Tetapkan naming convention file asset.
-- [ ] Simpan path asset di database bila relevan.
-- [ ] Tentukan batas ukuran video untuk MVP.
-- [ ] Siapkan compression workflow sederhana sebelum upload video.
-- [ ] Definisikan access policy untuk asset publik vs private.
-- [ ] Uji load asset pada lesson dan landing page.
+- [x] Tentukan bucket untuk thumbnails, illustrations, badges, dan videos.
+- [x] Tetapkan naming convention file asset.
+- [x] Simpan path asset di database bila relevan.
+- [x] Tentukan batas ukuran video untuk MVP.
+- [x] Siapkan compression workflow sederhana sebelum upload video.
+- [x] Definisikan access policy untuk asset publik vs private.
+- [x] Uji load asset pada lesson dan landing page.
 
 ## Task 15 - Tambahkan Analytics dan Event Tracking
 
@@ -347,15 +347,15 @@ Deliverables:
 Dependencies: Task 8, Task 10, Task 11, Task 12
 
 Subtasks:
-- [ ] Definisikan event signup_started.
-- [ ] Definisikan event signup_completed.
-- [ ] Definisikan event lesson_started.
-- [ ] Definisikan event lesson_completed.
-- [ ] Definisikan event dartpad_opened.
-- [ ] Definisikan event badge_awarded.
-- [ ] Pasang tracking di halaman atau action yang relevan.
-- [ ] Pastikan event naming konsisten lintas locale.
-- [ ] Tentukan dashboard metrik yang akan dipantau setelah launch.
+- [x] Definisikan event signup_started.
+- [x] Definisikan event signup_completed.
+- [x] Definisikan event lesson_started.
+- [x] Definisikan event lesson_completed.
+- [x] Definisikan event dartpad_opened.
+- [x] Definisikan event badge_awarded.
+- [x] Pasang tracking di halaman atau action yang relevan.
+- [x] Pastikan event naming konsisten lintas locale.
+- [x] Tentukan dashboard metrik yang akan dipantau setelah launch.
 
 ## Task 16 - Set Up CI/CD dan Deployment ke Vercel
 

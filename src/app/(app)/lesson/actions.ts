@@ -1,21 +1,25 @@
 "use server"
 
 import { revalidatePath } from "next/cache";
+import { getUser } from "@/lib/auth/dal";
+import { processLessonCompletion } from "@/lib/gamification/engine";
 
 export async function markLessonComplete(lessonSlug: string) {
-  // Mock artificial delay to simulate network/DB operation
-  await new Promise(resolve => setTimeout(resolve, 500));
+  const user = await getUser();
   
-  console.log(`User marked lesson ${lessonSlug} as complete.`);
-  
-  // Here we would:
-  // 1. Get supabase client
-  // 2. Fetch current user
-  // 3. Insert into `user_lesson_progress` table
-  // 4. Update XP in `profiles` and events in `xp_events`
-  // 5. Check streak and badges
+  if (!user) {
+    return { success: false, error: "Unauthorized" };
+  }
 
-  revalidatePath(`/lesson/${lessonSlug}`);
-  // Return success response to the client
-  return { success: true };
+  // Artificial delay removed
+
+  console.log(`User ${user.id} marking lesson ${lessonSlug} as complete.`);
+  
+  const result = await processLessonCompletion(user.id, lessonSlug);
+
+  if (result.success) {
+    revalidatePath(`/lesson/${lessonSlug}`);
+  }
+  
+  return result;
 }

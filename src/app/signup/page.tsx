@@ -1,8 +1,10 @@
 import { signup } from '@/app/auth/actions/auth-actions'
+import { ViewTracker } from '@/lib/analytics/ViewTracker'
 
 export default function SignupPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-24">
+      <ViewTracker event="signup_started" />
       <h1 className="text-4xl font-bold mb-8">Sign Up</h1>
       <form className="flex flex-col gap-4 w-full max-w-sm">
         <div className="flex flex-col gap-1">

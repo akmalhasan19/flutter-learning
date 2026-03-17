@@ -2,6 +2,8 @@ import React from 'react';
 import Link from 'next/link';
 import { CheckCircle, PlayCircle, Code, ArrowRight } from 'lucide-react';
 import DartpadEmbed from '@/components/learn/DartpadEmbed';
+import MarkCompleteButton from '../MarkCompleteButton';
+import { ViewTracker } from '@/lib/analytics/ViewTracker';
 
 // === MOCK DATA ===
 const MOCK_COURSE_MODULES = [
@@ -40,6 +42,7 @@ export default async function LessonPage({
 
   return (
     <div className="flex h-[calc(100vh-4rem)] bg-background">
+      <ViewTracker event="lesson_started" properties={{ slug: lessonSlug }} />
       {/* Sidebar */}
       <aside className="w-80 border-r bg-muted/10 overflow-y-auto hidden md:block">
         <div className="p-4 border-b font-semibold">Course Content</div>
@@ -116,18 +119,7 @@ export default async function LessonPage({
 
           {/* Bottom Actions */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t">
-            <form action={async () => {
-              "use server"
-              const { markLessonComplete } = await import("../../lesson/actions");
-              await markLessonComplete(lessonSlug);
-            }}>
-              <button 
-                type="submit"
-                className="px-6 py-2.5 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors w-full sm:w-auto font-medium shadow-sm border"
-              >
-                Mark as Complete
-              </button>
-            </form>
+            <MarkCompleteButton lessonSlug={lessonSlug} />
             
             {lesson.nextLessonSlug ? (
               <Link 
