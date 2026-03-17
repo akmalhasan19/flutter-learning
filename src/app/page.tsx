@@ -109,10 +109,6 @@ export default function LandingPage() {
       <main className="pt-32 pb-20 px-6">
         {/* HERO SECTION */}
         <div className="max-w-6xl mx-auto flex flex-col items-center text-center">
-          <div className="inline-flex flex-col md:flex-row items-center gap-2 mb-6 px-4 py-2 rounded-full border border-[rgba(5,183,214,0.3)] bg-[rgba(5,183,214,0.05)] text-[#05b7d6] text-sm font-medium">
-            <span className="flex h-2 w-2 rounded-full bg-[#05b7d6] animate-pulse" />
-            V1.0 is now live — start learning Flutter today!
-          </div>
           
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-slate-100 font-[family-name:var(--font-space-grotesk),sans-serif] max-w-4xl leading-tight">
             {t.heroTitle} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#05b7d6] to-cyan-200">{t.heroTitleHighlight}</span>
@@ -143,7 +139,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto mt-20 relative">
           <div className="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-[#05b7d6]/20 via-transparent to-[#05b7d6]/10 blur-xl opacity-70"></div>
           
-          <div className="relative rounded-2xl border border-[#27272A] bg-[#09090B] shadow-2xl overflow-hidden flex flex-col items-stretch max-h-[600px] w-full">
+          <div className="relative rounded-2xl border border-[#27272A] bg-[#09090B] shadow-2xl overflow-hidden flex flex-col items-stretch max-h-[800px] w-full">
             {/* Top IDE Header fake */}
             <div className="h-10 bg-[#18181B] border-b border-[#27272A] flex items-center px-4 gap-2 shrink-0">
               <div className="flex gap-1.5 mr-4">
@@ -186,8 +182,43 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              {/* Code Area */}
-              <div className="flex-1 bg-[#18181B] flex flex-col p-4 relative overflow-hidden">
+              {/* Main Content Area */}
+              <div className="flex-1 flex flex-col min-w-0 bg-[#09090B]">
+                {/* Top Half: Reading / Video Area */}
+                <div className="p-6 md:p-8 border-b border-[#27272A] flex flex-col xl:flex-row items-start xl:items-center gap-8 shrink-0">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 text-xs text-slate-400 mb-3 font-mono">
+                      <span>Flutter Basics</span>
+                      <ChevronRight className="w-3 h-3" />
+                      <span className="text-[#05b7d6]">Widgets 101</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-100 mb-3 font-[family-name:var(--font-space-grotesk),sans-serif]">Building Your First UI</h3>
+                    <p className="text-sm text-slate-400 leading-relaxed">
+                      In Flutter, everything is a widget. Watch this short video to understand the basics of 
+                      <span className="text-[#05b7d6] font-mono mx-1">StatelessWidget</span> and 
+                      <span className="text-[#05b7d6] font-mono mx-1">StatefulWidget</span> before you start coding.
+                    </p>
+                  </div>
+                  
+                  {/* Video Mockup */}
+                  <div className="w-full xl:w-[320px] aspect-video shrink-0 bg-[#18181B] border border-[#27272A] rounded-xl relative flex items-center justify-center overflow-hidden group cursor-pointer shadow-lg">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img alt="Code on screen" className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-40 transition-opacity" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKD207uxT9g7l_tkbfA6ROalIGh47AdrG0LqoSO6LzFBRRhgmKEpgj2Slk7qhqcpRgWLq07O_DDKUX2AIKBH2wViTyLP0JHUJHyaSG3Q3swY5g2Xa93pZGg6BaVAgFeOsLgQaxygs-fMnDdujowYqEEoCuyrOw4xRyGIrQ3cODBLAwjajskMjcEATJ7mdYWiohHQWNO8Wpggr52J710G_Hs6KAbVycgTeH0B0CZjOwSYZggKQxU7H5D_Wc4iJvf5q7N4EUj654wMRt" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#09090B]/80 to-transparent"></div>
+                    <div className="w-12 h-12 rounded-full bg-[#05b7d6]/20 flex items-center justify-center border-2 border-[#05b7d6]/50 backdrop-blur-sm group-hover:scale-110 transition-transform z-10 shadow-[0_0_12px_rgba(5,183,214,0.4)]">
+                      <PlayCircle className="w-6 h-6 text-[#05b7d6]" />
+                    </div>
+                    <div className="absolute bottom-3 left-4 right-4 flex justify-between items-center z-10 text-[10px] text-slate-300 font-mono">
+                      <span>Understanding Widgets</span>
+                      <span>03:42</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom Half: Split Editor & Emulator */}
+                <div className="flex flex-1 overflow-hidden min-h-[300px]">
+                  {/* Code Area */}
+                  <div className="flex-1 bg-[#18181B] flex flex-col p-4 relative overflow-hidden">
                 <div className="text-[#05b7d6] font-mono text-sm mb-4 flex items-center justify-between border-b border-[#27272A] pb-2">
                   <span>main.dart</span>
                   <div className="flex items-center gap-2 bg-[#27272A] px-3 py-1 rounded text-emerald-400 text-xs shadow-sm hover:bg-slate-800 transition-colors cursor-pointer">
@@ -228,6 +259,9 @@ export default function LandingPage() {
                     <span className="text-lg">Hello World!</span>
                   </div>
                   <div className="absolute bottom-1 inset-x-0 h-1 bg-gray-300 w-20 mx-auto rounded-full z-20"></div>
+                </div>
+              </div>
+
                 </div>
               </div>
 

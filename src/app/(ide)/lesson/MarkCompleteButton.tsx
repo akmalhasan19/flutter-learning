@@ -50,7 +50,7 @@ export default function MarkCompleteButton({ lessonSlug }: Props) {
       <button 
         onClick={handleComplete}
         disabled={isPending}
-        className="px-6 py-2.5 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors w-full sm:w-auto font-medium shadow-sm border disabled:opacity-50"
+        className="px-6 py-2.5 bg-[#18181B] text-slate-200 border border-[#27272A] rounded-lg hover:bg-[#27272A] transition-colors w-full sm:w-auto font-medium shadow-sm disabled:opacity-50"
       >
         {isPending ? 'Completing...' : 'Mark as Complete'}
       </button>

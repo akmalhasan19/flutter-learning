@@ -31,13 +31,17 @@ export default async function AppLayout({
 
   return (
     <RealtimeProvider userId={user.id} initialXp={profile?.total_xp || 0} initialStreak={profile?.current_streak || 0}>
-      <div className="min-h-screen bg-slate-50 flex flex-col">
-        <header className="sticky top-0 z-30 w-full border-b border-border bg-white shadow-sm">
+      <div className="min-h-screen bg-[#09090B] text-slate-300 font-sans selection:bg-[#05b7d6] selection:text-[#09090B] overflow-x-hidden flex flex-col">
+        <header className="sticky top-0 z-30 w-full bg-[#09090B]/80 backdrop-blur-md border-b border-[#27272A] shadow-sm">
           <div className="container mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
             <div className="flex items-center gap-6">
-              <Link href="/dashboard" className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded bg-blue-600 flex items-center justify-center text-white font-bold">F</div>
-                <span className="font-bold tracking-tight hidden sm:block">FlutterCamp</span>
+              <Link href="/dashboard" className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-[#05b7d6] flex items-center justify-center text-[#09090B] font-bold text-xl shadow-[0_0_12px_rgba(5,183,214,0.4)]">
+                  F
+                </div>
+                <span className="font-bold text-2xl tracking-tight text-slate-100 hidden sm:block font-[family-name:var(--font-space-grotesk),sans-serif]">
+                  FlutterCamp
+                </span>
               </Link>
               <MainNav />
             </div>
@@ -46,7 +50,7 @@ export default async function AppLayout({
               <LiveUserStats />
 
               <form action={logout}>
-                <button className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-200 hover:bg-slate-100 transition-colors text-slate-600">
+                <button className="flex items-center justify-center w-10 h-10 rounded-full border border-[#27272A] bg-[#18181B] hover:bg-[#27272A] transition-colors text-slate-400 hover:text-slate-200">
                   <LogOut className="w-4 h-4" />
                 </button>
               </form>

@@ -24,8 +24,8 @@ export function MainNav() {
         <Link
           key={link.href}
           href={link.href}
-          className={`text-sm font-medium transition-colors hover:text-blue-600 ${
-            pathname?.startsWith(link.href) ? "text-blue-600" : "text-slate-600"
+          className={`text-sm font-medium transition-colors hover:text-white ${
+            pathname?.startsWith(link.href) ? "text-[#05b7d6]" : "text-slate-400"
           }`}
         >
           {link.label}
