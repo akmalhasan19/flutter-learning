@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils"; // shadcn utility if present, else I'll check
 
 export function MainNav() {
   const pathname = usePathname();

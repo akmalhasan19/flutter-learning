@@ -2,6 +2,7 @@
 
 import { useRealtime } from "@/components/providers/RealtimeProvider";
 import { Star, Flame, Award } from "lucide-react";
+import Link from "next/link";
 
 interface Props {
   displayName: string;
@@ -12,15 +13,15 @@ export default function IdeSidebarStats({ displayName }: Props) {
 
   return (
     <div className="p-4 border-b border-[#27272A] shrink-0">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-8 h-8 rounded-full bg-[#27272A] overflow-hidden shrink-0 border border-[#27272A] flex items-center justify-center text-xs font-bold text-slate-300">
+      <Link href="/profile" className="flex items-center gap-3 mb-4 group cursor-pointer hover:opacity-80 transition-opacity">
+        <div className="w-8 h-8 rounded-full bg-[#27272A] overflow-hidden shrink-0 border border-[#27272A] flex items-center justify-center text-xs font-bold text-slate-300 group-hover:border-[#05b7d6] transition-colors">
           {displayName.charAt(0).toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-[family-name:var(--font-space-grotesk),sans-serif] font-semibold text-sm truncate">{displayName}</p>
+          <p className="font-[family-name:var(--font-space-grotesk),sans-serif] font-semibold text-sm truncate group-hover:text-[#05b7d6] transition-colors">{displayName}</p>
           <p className="text-xs text-slate-400 truncate">Beginner Track</p>
         </div>
-      </div>
+      </Link>
 
       <div className="grid grid-cols-3 gap-2">
         <div className="flex flex-col items-center justify-center p-2 rounded bg-[#27272A] border border-[#27272A]">

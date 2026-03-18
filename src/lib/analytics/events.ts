@@ -4,7 +4,13 @@ export type AppEvent =
   | 'lesson_started'
   | 'lesson_completed'
   | 'dartpad_opened'
-  | 'badge_awarded';
+  | 'badge_awarded'
+  | 'runtime_opened'
+  | 'submission_created'
+  | 'submission_passed'
+  | 'submission_failed'
+  | 'grader_infra_error'
+  | 'lesson_blocked_by_assessment';
 
 export const trackEvent = (
   eventName: AppEvent,

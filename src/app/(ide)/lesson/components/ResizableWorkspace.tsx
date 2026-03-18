@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 
 interface Props {
   topContent: React.ReactNode;
-  bottomContent: React.ReactNode;
+  bottomContent?: React.ReactNode;
 }
 
 export default function ResizableWorkspace({ topContent, bottomContent }: Props) {
@@ -29,8 +29,12 @@ export default function ResizableWorkspace({ topContent, bottomContent }: Props)
     const containerRect = containerRef.current.getBoundingClientRect();
     const newTopHeight = ((e.clientY - containerRect.top) / containerRect.height) * 100;
     
-    // Prevent dragging too far up or down
-    if (newTopHeight >= 20 && newTopHeight <= 80) {
+    // Allow full collapsing, optionally snapping to 0 or 100 near the edges
+    if (newTopHeight < 5) {
+      setTopHeight(0);
+    } else if (newTopHeight > 95) {
+      setTopHeight(100);
+    } else {
       setTopHeight(newTopHeight);
     }
   };
@@ -44,12 +48,22 @@ export default function ResizableWorkspace({ topContent, bottomContent }: Props)
     };
   }, []);
 
+  if (!bottomContent) {
+    return (
+      <main className="flex-1 flex flex-col min-w-0 h-full">
+        <div className="flex-col min-h-0 h-full flex">
+          {topContent}
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main ref={containerRef} className="flex-1 flex flex-col min-w-0 h-full">
       {/* Top Panel */}
       <div 
-        style={{ height: `${topHeight}%` }} 
-        className="flex flex-col min-h-0"
+        style={{ height: `${topHeight}%`, display: topHeight === 0 ? 'none' : 'flex' }} 
+        className="flex-col min-h-0"
       >
         {topContent}
       </div>
@@ -64,8 +78,8 @@ export default function ResizableWorkspace({ topContent, bottomContent }: Props)
       
       {/* Bottom Panel */}
       <div 
-        style={{ height: `${100 - topHeight}%` }} 
-        className="flex flex-col min-h-0"
+        style={{ height: `${100 - topHeight}%`, display: topHeight === 100 ? 'none' : 'flex' }} 
+        className="flex-col min-h-0"
       >
         {bottomContent}
       </div>
