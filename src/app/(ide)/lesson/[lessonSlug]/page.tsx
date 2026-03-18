@@ -117,8 +117,8 @@ export default async function IdeLessonPage({
         l.locked = !prevLesson.completed;
         if (l.locked) {
            l.blockingReason = prevLesson.assessment_mode === 'graded' 
-             ? `Must pass project '${prevLesson.displayTitle}' first.`
-             : `Must complete '${prevLesson.displayTitle}' first.`;
+             ? `Wajib lulus project '${prevLesson.displayTitle}' terlebih dahulu.`
+             : `Wajib menyelesaikan materi '${prevLesson.displayTitle}' terlebih dahulu.`;
         }
       }
     });
@@ -128,7 +128,6 @@ export default async function IdeLessonPage({
     // Check lock status for current lesson
     if (currentIndex !== -1 && flatLessons[currentIndex].locked) {
        // Track blocking event via a small script inline or Server Analytics 
-       // For Server Analytics, we will just call it before returning the view
        import('@/lib/analytics/events').then(({ trackEvent }) => {
           trackEvent('lesson_blocked_by_assessment', {
             userId: user?.id,
@@ -139,12 +138,19 @@ export default async function IdeLessonPage({
        }).catch(console.error);
        
        return (
-        <div className="flex h-screen items-center justify-center bg-slate-900 text-white flex-col gap-4">
-          <Lock className="w-12 h-12 text-slate-500 mb-2" />
-          <h1 className="text-2xl font-bold">Lesson Locked</h1>
-          <p className="text-slate-400">{flatLessons[currentIndex].blockingReason}</p>
-          <Link href="/learn" className="px-6 py-2 bg-[#05b7d6] text-[#09090B] font-bold rounded-lg mt-4 hover:bg-[#0891B2] transition-colors">
-            Return to Curriculum
+        <div className="flex h-screen items-center justify-center bg-[#09090B] text-slate-100 flex-col gap-6 p-6 text-center">
+          <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center border-4 border-slate-700">
+            <Lock className="w-10 h-10 text-slate-400" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold font-[family-name:var(--font-space-grotesk),sans-serif] mb-3">Materi Ini Terkunci</h1>
+            <p className="text-slate-400 max-w-md mx-auto leading-relaxed">
+              Kamu harus menyelesaikan materi sebelumnya secara berurutan. <br/>
+              <span className="text-amber-400 font-medium mt-2 inline-block bg-amber-400/10 px-4 py-2 rounded-lg border border-amber-400/20">{flatLessons[currentIndex].blockingReason}</span>
+            </p>
+          </div>
+          <Link href="/learn" className="px-8 py-3 bg-[#05b7d6] text-[#09090B] font-bold rounded-xl shadow-[0_0_12px_rgba(5,183,214,0.3)] hover:bg-[#0891B2] transition-all flex items-center gap-2">
+            Kembali ke Peta Belajar
           </Link>
         </div>
       );
@@ -250,19 +256,26 @@ export default async function IdeLessonPage({
               <div className="max-w-4xl mx-auto w-full">
                 {/* Breadcrumbs & Meta */}
                 <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center text-sm text-slate-400 gap-2 font-[family-name:var(--font-space-grotesk),sans-serif]">
-                    <span>{lesson.modules.title || lesson.modules.slug}</span>
-                    <ChevronRight className="w-4 h-4" />
-                    <span className="text-[#05b7d6]">{translation.title}</span>
+                  <div className="flex items-center text-sm text-slate-400 gap-2 font-[family-name:var(--font-space-grotesk),sans-serif] flex-wrap">
+                    <Link href="/learn" className="hover:text-slate-200 transition-colors">Peta Belajar</Link>
+                    <ChevronRight className="w-4 h-4 text-slate-600" />
+                    <span className="text-slate-300">Modul {lesson.modules.order_index}: {lesson.modules.title || lesson.modules.slug}</span>
+                    <ChevronRight className="w-4 h-4 text-slate-600" />
+                    <span className="text-[#05b7d6] font-medium">{translation.title}</span>
                   </div>
-                  <div className="px-2 py-1 border border-[#27272A] rounded text-xs text-slate-400 flex items-center gap-1 bg-[#18181B]">
-                    <Clock className="w-[14px] h-[14px]" />
-                    {lesson.duration_minutes ? `${lesson.duration_minutes} min` : "5 min read"}
+                  <div className="px-3 py-1.5 border border-[#27272A] rounded-lg text-xs text-slate-400 flex items-center gap-1.5 bg-[#18181B] shrink-0 font-medium">
+                    <Clock className="w-3.5 h-3.5" />
+                    {lesson.duration_minutes ? `Est. ${lesson.duration_minutes} menit` : "5 menit"}
                   </div>
                 </div>
 
+                {/* Module Context */}
+                <div className="mb-4 inline-block px-3 py-1 bg-slate-800 text-slate-300 text-xs font-bold rounded-md uppercase tracking-wider border border-slate-700">
+                  Modul {lesson.modules.order_index}
+                </div>
+
                 {/* Title */}
-                <h1 className="font-[family-name:var(--font-space-grotesk),sans-serif] text-3xl font-bold mb-6 text-slate-100">
+                <h1 className="font-[family-name:var(--font-space-grotesk),sans-serif] text-3xl sm:text-4xl font-bold mb-8 text-slate-100 leading-tight">
                   {translation.title}
                 </h1>
 
@@ -296,6 +309,7 @@ export default async function IdeLessonPage({
       <IdeBottomBar 
         lessonSlug={lesson.slug} 
         previousSlug={previousLessonSlug}
+        nextSlug={nextLessonSlug}
         assessmentMode={lesson.assessment_mode}
         expectedOutcomes={translation.expected_outcomes || []}
       />

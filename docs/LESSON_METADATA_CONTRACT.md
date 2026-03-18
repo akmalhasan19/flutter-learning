@@ -8,6 +8,7 @@ Setiap lesson sudah memiliki dasar identifikasi berikut yang ada di tabel `lesso
 - `snippet_id` (opsional): ID snippet khusus untuk referensi eksternal (misal: ID gist untuk dartpad).
 - `video_path` (opsional): URL atau path video pembelajaran.
 - `body_ref` (opsional): Path referensi file di repository untuk konten body (misal: markdown content).
+- `duration_minutes`: Basis estimasi durasi waktu yang dibutuhkan learner untuk menyelesaikan lesson ini, akan digunakan di UI (roadmap & lesson page).
 
 ## 2. Hybrid Runtime & Assessment Metadata
 
@@ -47,7 +48,17 @@ Daftar checklist/objektif yang dirender pada UI. Membantu user mengetahui apa sa
 Rule untuk membuka lesson atau course berikutnya (gating).
 Bisa berupa teks string yang dipetakan ke logic engine (misalnya `"require_all_passed"`, atau `"streak_3_days"`).
 
+## 5. Course & Module Metadata (Minimum untuk UI Roadmap)
+
+- **Course `difficulty`**: Menandakan tingkat kesulitan course (contoh: `beginner`). Berguna jika nanti ada course lanjutan.
+- **Module `description`**: Field ini wajib diisi untuk mendeskripsikan *goal summary* modul. Ringkasan tujuan belajar dari modul ini akan di-render secara eksplisit di UI roadmap (halaman Belajar).
+
 ---
+**Audit Keputusan (Beginner Curriculum):**
+- *Apakah lesson membutuhkan `difficulty_level`?* **Tidak**. Urutan pembelajaran bersifat linear (sequential) tanpa lompat materi, sehingga `difficulty_level` di tingkat lesson dianggap *redundant* dan bisa membebani pemula secara kognitif.
+- *Apakah lesson membutuhkan `learning_stage`?* **Tidak**. Posisi `learning_stage` sudah diwakilkan oleh hierarki `Course -> Module -> Lesson` dan rule unlock yang linear.
+- *Apakah module membutuhkan goal summary?* **Ya**. Direpresentasikan melalui kolom `description` pada tabel `modules` yang akan dirender langsung di halaman Belajar.
+
 **Catatan Authoring:**
 - Saat membuat lesson teori: `runtime_mode = none`, `assessment_mode = manual`.
 - Saat membuat lesson dartpad: `runtime_mode = browser_lab`, `assessment_mode = manual`, isi `snippet_id`.

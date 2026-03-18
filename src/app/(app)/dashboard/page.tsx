@@ -23,7 +23,7 @@ export default async function DashboardPage() {
       slug,
       title,
       modules (
-        id, title, slug, order_index,
+        id, title, description, slug, order_index,
         lessons (
           id, slug, lesson_type, runtime_mode, assessment_mode, order_index,
           lesson_translations (title, locale)
@@ -43,10 +43,12 @@ export default async function DashboardPage() {
     
   const progressMap = new Map(userProgress?.map(p => [p.lesson_id, p.status]) || []);
 
-  let nextLesson = null;
+  let nextLesson: any = null;
   let nextLessonTitle = "";
   let isCourseCompleted = false;
   let progressPercent = 0;
+  let completedCount = 0;
+  let flatLessons: any[] = [];
   let recentLessons: any[] = [];
 
   if (courses && courses.length > 0) {
@@ -58,17 +60,17 @@ export default async function DashboardPage() {
       mod.lessons?.sort((a: any, b: any) => a.order_index - b.order_index);
     });
 
-    const flatLessons: any[] = [];
     course.modules?.forEach((m: any) => {
       m.lessons?.forEach((l: any) => {
         flatLessons.push({
           ...l,
-          moduleTitle: m.title || m.slug
+          moduleTitle: m.title || m.slug,
+          moduleDescription: m.description || ""
         });
       });
     });
 
-    const completedCount = flatLessons.filter(l => progressMap.get(l.id) === 'completed').length;
+    completedCount = flatLessons.filter(l => progressMap.get(l.id) === 'completed').length;
     progressPercent = flatLessons.length > 0 ? Math.round((completedCount / flatLessons.length) * 100) : 0;
 
     // Find first uncompleted lesson
@@ -83,13 +85,12 @@ export default async function DashboardPage() {
     }
 
     // Get 3 most recently completed/started lessons based on order for now
-    // A better approach would be sorting by `completed_at` or `started_at`
     if (nextLessonIndex !== -1) {
       recentLessons = flatLessons.slice(Math.max(0, nextLessonIndex - 2), nextLessonIndex + 1).reverse().map(l => {
          const trans = l.lesson_translations?.find((t: any) => t.locale === 'id') || l.lesson_translations?.[0];
          return {
            title: trans?.title || l.slug,
-           type: l.runtime_mode === 'browser' ? 'lab' : l.assessment_mode === 'graded' ? 'project' : 'concept',
+           type: l.runtime_mode === 'browser_lab' ? 'lab' : l.assessment_mode === 'graded' ? 'project' : 'concept',
            completed: progressMap.get(l.id) === 'completed'
          }
       });
@@ -98,7 +99,7 @@ export default async function DashboardPage() {
         const trans = l.lesson_translations?.find((t: any) => t.locale === 'id') || l.lesson_translations?.[0];
         return {
           title: trans?.title || l.slug,
-          type: l.runtime_mode === 'browser' ? 'lab' : l.assessment_mode === 'graded' ? 'project' : 'concept',
+          type: l.runtime_mode === 'browser_lab' ? 'lab' : l.assessment_mode === 'graded' ? 'project' : 'concept',
           completed: true
         }
      });
@@ -151,9 +152,28 @@ export default async function DashboardPage() {
                   <p className="text-slate-400 mb-6 max-w-md">Kamu telah menyelesaikan seluruh kurikulum Beginner Path.</p>
                   
                   <Link href="/learn" className="inline-flex items-center justify-center px-6 py-3 bg-[#27272A] hover:bg-[#3F3F46] text-slate-100 font-bold rounded-xl transition-all">
-                    Lihat Kurikulum
+                    Lihat Peta Belajar
                   </Link>
                  </>
+              ) : completedCount === 0 && flatLessons.length > 0 ? (
+                <>
+                  <span className="inline-block px-3 py-1 bg-[#05b7d6]/10 text-[#05b7d6] text-xs font-semibold rounded-full mb-4">
+                    Mulai Belajar Flutter
+                  </span>
+                  <h2 className="text-2xl font-bold mb-2 text-slate-100 font-[family-name:var(--font-space-grotesk),sans-serif]">Siap Membangun Aplikasi Pertamamu?</h2>
+                  <p className="text-slate-400 mb-6 max-w-md leading-relaxed">Kurikulum ini dirancang langkah demi langkah khusus untuk pemula. Mulai dari nol hingga aplikasimu terwujud. Mari mulai perjalananmu sekarang!</p>
+                  
+                  <div className="flex flex-wrap gap-4">
+                    <Link href="/learn" className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#05b7d6] hover:bg-[#0891B2] text-[#09090B] font-bold rounded-xl shadow-[0_0_12px_rgba(5,183,214,0.3)] transition-all">
+                      Buka Peta Kurikulum <ArrowRight className="w-4 h-4" />
+                    </Link>
+                    {nextLesson && (
+                      <Link href={`/lesson/${nextLesson.slug}`} className="inline-flex items-center justify-center px-6 py-3 bg-[#27272A] hover:bg-[#3F3F46] text-slate-100 font-bold rounded-xl transition-all">
+                        Langsung ke Materi 1
+                      </Link>
+                    )}
+                  </div>
+                </>
               ) : nextLesson ? (
                 <>
                   <div className="flex items-center gap-2 mb-4">
@@ -162,20 +182,29 @@ export default async function DashboardPage() {
                     </span>
                     {nextLesson.assessment_mode === 'graded' && (
                       <span className="inline-block px-3 py-1 bg-purple-500/10 text-purple-400 border border-purple-500/20 text-xs font-semibold rounded-full">
-                        Project Lab
+                        Checkpoint Project
                       </span>
                     )}
-                    {nextLesson.runtime_mode === 'browser' && (
+                    {nextLesson.runtime_mode === 'browser_lab' && (
                       <span className="inline-block px-3 py-1 bg-orange-500/10 text-orange-400 border border-orange-500/20 text-xs font-semibold rounded-full">
                         Browser Lab
                       </span>
                     )}
                   </div>
-                  <h2 className="text-2xl font-bold mb-2 text-slate-100 font-[family-name:var(--font-space-grotesk),sans-serif]">{nextLessonTitle}</h2>
-                  <p className="text-slate-400 mb-6">{courses?.[0]?.title || 'Course'} • {nextLesson.moduleTitle}</p>
+                  <h2 className="text-2xl font-bold mb-1 text-slate-100 font-[family-name:var(--font-space-grotesk),sans-serif]">{nextLessonTitle}</h2>
+                  
+                  <div className="bg-[#09090B]/60 border border-[#27272A] rounded-xl p-4 mb-6 mt-5 max-w-lg">
+                    <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold mb-1.5 flex items-center gap-1.5">
+                      <Target className="w-3 h-3" /> Target Modul Saat Ini
+                    </p>
+                    <p className="text-sm font-bold text-slate-200">{nextLesson.moduleTitle}</p>
+                    {nextLesson.moduleDescription && (
+                      <p className="text-sm text-slate-400 mt-1 leading-relaxed">{nextLesson.moduleDescription}</p>
+                    )}
+                  </div>
                   
                   <Link href={`/lesson/${nextLesson.slug}`} className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#05b7d6] hover:bg-[#0891B2] text-[#09090B] font-bold rounded-xl shadow-[0_0_12px_rgba(5,183,214,0.3)] transition-all">
-                    Mulai Belajar <ArrowRight className="w-4 h-4" />
+                    Lanjutkan Materi <ArrowRight className="w-4 h-4" />
                   </Link>
                 </>
               ) : (
@@ -187,7 +216,7 @@ export default async function DashboardPage() {
                   <p className="text-slate-400 mb-6 max-w-md">Pilih jalur belajar yang tersedia untuk mulai mendapatkan XP.</p>
                   
                   <Link href="/learn" className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#05b7d6] hover:bg-[#0891B2] text-[#09090B] font-bold rounded-xl shadow-[0_0_12px_rgba(5,183,214,0.3)] transition-all">
-                    Buka Kurikulum <ArrowRight className="w-4 h-4" />
+                    Buka Roadmap Kurikulum <ArrowRight className="w-4 h-4" />
                   </Link>
                 </>
               )}

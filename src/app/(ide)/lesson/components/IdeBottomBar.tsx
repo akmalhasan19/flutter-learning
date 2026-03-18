@@ -4,7 +4,7 @@ import { useTransition, useState, useEffect } from "react";
 import { toast, Toaster } from "sonner";
 import { markLessonComplete, submitGradedLesson } from "@/app/(ide)/lesson/actions";
 import { GamificationResult } from "@/lib/gamification/engine";
-import { ArrowLeft, Check, Plus, AlertCircle, Loader2, Play } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Plus, AlertCircle, Loader2, Play } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { GraderStatus } from "@/lib/grader/provider";
@@ -13,11 +13,12 @@ import { useRouter } from "next/navigation";
 interface Props {
   lessonSlug: string;
   previousSlug: string | null;
+  nextSlug: string | null;
   assessmentMode: string;
   expectedOutcomes: string[];
 }
 
-export default function IdeBottomBar({ lessonSlug, previousSlug, assessmentMode, expectedOutcomes }: Props) {
+export default function IdeBottomBar({ lessonSlug, previousSlug, nextSlug, assessmentMode, expectedOutcomes }: Props) {
   const [isPending, startTransition] = useTransition();
   const [checkedItems, setCheckedItems] = useState<Record<number, boolean>>({});
   const router = useRouter();
@@ -94,12 +95,12 @@ export default function IdeBottomBar({ lessonSlug, previousSlug, assessmentMode,
         
         if (newStatus === 'passed') {
           setIsCompleted(true);
-          toast.success("Project tests passed! Great job!");
+          toast.success("Project tests lulus! Kerja bagus!");
           router.refresh();
         } else if (newStatus === 'failed') {
-          toast.error("Tests failed. Check your logic and try again.");
+          toast.error("Tests gagal. Cek kembali kodemu dan coba lagi.");
         } else if (newStatus === 'infra_error') {
-          toast.error("Infrastructure error. Please try again later.");
+          toast.error("Terjadi masalah sistem. Silakan coba lagi nanti.");
         }
       })
       .subscribe();
@@ -130,16 +131,16 @@ export default function IdeBottomBar({ lessonSlug, previousSlug, assessmentMode,
 
       toast.success(
         <div className="flex flex-col gap-1">
-          <span className="font-semibold">Lesson Completed!</span>
-          <span className="text-sm border-t pt-1">+{result.earnedXp} XP Earned! 🚀</span>
+          <span className="font-semibold">Materi Selesai! 🎉</span>
+          <span className="text-sm border-t pt-1 text-emerald-400">+{result.earnedXp} XP Didapatkan! 🚀</span>
           {result.streak > 1 && (
-            <span className="text-sm text-orange-500 font-medium">
-              🔥 {result.streak} Day Streak!
+            <span className="text-sm text-orange-500 font-medium mt-1 border-t border-slate-700/50 pt-1">
+              🔥 Streak {result.streak} Hari!
             </span>
           )}
           {result.badges && result.badges.length > 0 && (
-            <span className="text-sm text-yellow-600 font-medium">
-              🏆 New Badge Unlocked!
+            <span className="text-sm text-yellow-500 font-medium mt-1 border-t border-slate-700/50 pt-1">
+              🏆 Lencana Baru Terbuka!
             </span>
           )}
         </div>,
@@ -212,7 +213,7 @@ export default function IdeBottomBar({ lessonSlug, previousSlug, assessmentMode,
         {/* Checklist Section for Manual Lessons */}
         {assessmentMode === "manual" && expectedOutcomes && expectedOutcomes.length > 0 && !isCompleted && (
           <div className="border-b border-[#27272A] bg-[#18181B] px-6 py-3">
-            <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Objectives</h4>
+            <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Checklist Belajar</h4>
             <div className="flex flex-col gap-2">
               {expectedOutcomes.map((outcome, index) => (
                 <label key={index} className="flex items-center gap-2 cursor-pointer group">
@@ -247,7 +248,7 @@ export default function IdeBottomBar({ lessonSlug, previousSlug, assessmentMode,
           <div className="flex items-center gap-4">
             <div className="text-sm text-slate-400 font-mono flex items-center gap-2">
               <span className={`w-2 h-2 rounded-full ${assessmentMode === 'graded' ? 'bg-amber-500' : 'bg-emerald-500'}`}></span>
-              {assessmentMode === 'graded' ? 'Graded Environment' : 'Runtime Ready'}
+              {assessmentMode === 'graded' ? 'Lingkungan Grader' : 'Siap Dijalankan'}
             </div>
             
             {assessmentMode === "graded" ? (
@@ -262,19 +263,19 @@ export default function IdeBottomBar({ lessonSlug, previousSlug, assessmentMode,
               >
                 {isPending || submissionStatus === 'queued' || submissionStatus === 'running' ? (
                    <>
-                     <Loader2 className="w-[16px] h-[16px] animate-spin" /> Grading...
+                     <Loader2 className="w-[16px] h-[16px] animate-spin" /> Menilai...
                    </>
                 ) : isCompleted ? (
                    <>
-                     <Check className="w-[16px] h-[16px]" /> Passed
+                     <Check className="w-[16px] h-[16px]" /> Lulus
                    </>
                 ) : submissionStatus === 'failed' ? (
                    <>
-                     <Play className="w-[16px] h-[16px]" /> Try Again
+                     <Play className="w-[16px] h-[16px]" /> Coba Lagi
                    </>
                 ) : (
                   <>
-                    <Play className="w-[16px] h-[16px]" /> Run Tests
+                    <Play className="w-[16px] h-[16px]" /> Jalankan Test
                   </>
                 )}
               </button>
@@ -287,9 +288,9 @@ export default function IdeBottomBar({ lessonSlug, previousSlug, assessmentMode,
                     ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
                     : 'bg-[#05b7d6] hover:bg-[#0891B2] text-[#09090B] shadow-[0_0_0_1px_#05b7d6,0_0_12px_rgba(5,183,214,0.2)]'
                 }`}
-                title={!isAllChecked ? "Complete all objectives first" : ""}
+                title={!isAllChecked ? "Selesaikan semua checklist terlebih dahulu" : ""}
               >
-                {isPending ? "Completing..." : isCompleted ? "Completed" : "Mark as Complete"}
+                {isPending ? "Menyelesaikan..." : isCompleted ? "Selesai" : "Tandai Selesai"}
                 {!isPending && !isCompleted && (
                   <div className="flex items-center gap-1 bg-[#09090B]/20 px-2 py-0.5 rounded text-xs ml-2">
                     <Plus className="w-[14px] h-[14px]" />
@@ -298,6 +299,24 @@ export default function IdeBottomBar({ lessonSlug, previousSlug, assessmentMode,
                 )}
                 {isCompleted && <Check className="w-[16px] h-[16px] ml-1" />}
               </button>
+            )}
+            
+            {/* Next Lesson CTA */}
+            {isCompleted && nextSlug && (
+              <Link 
+                href={`/lesson/${nextSlug}`}
+                className="ml-2 px-5 py-2 bg-emerald-500 hover:bg-emerald-400 text-[#09090B] font-bold text-sm rounded transition-colors flex items-center gap-2 shadow-[0_0_12px_rgba(16,185,129,0.3)] animate-in fade-in zoom-in duration-300"
+              >
+                Materi Berikutnya <ArrowRight className="w-4 h-4" />
+              </Link>
+            )}
+            {isCompleted && !nextSlug && (
+              <Link 
+                href="/dashboard"
+                className="ml-2 px-5 py-2 bg-emerald-500 hover:bg-emerald-400 text-[#09090B] font-bold text-sm rounded transition-colors flex items-center gap-2 shadow-[0_0_12px_rgba(16,185,129,0.3)] animate-in fade-in zoom-in duration-300"
+              >
+                Kembali ke Dashboard <Check className="w-4 h-4" />
+              </Link>
             )}
           </div>
         </div>

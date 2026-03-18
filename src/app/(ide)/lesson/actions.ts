@@ -7,6 +7,77 @@ import { createClient } from "@/lib/supabase/server";
 import { graderProvider } from "@/lib/grader/provider";
 import { trackEvent } from "@/lib/analytics/events";
 
+// Helper function to check if a user is allowed to access/complete a lesson based on sequential progress
+async function checkLessonPrerequisites(supabase: any, userId: string, lessonSlug: string) {
+  // 1. Fetch current lesson with its module and course context
+  const { data: lesson } = await supabase
+    .from('lessons')
+    .select(`
+      id, 
+      assessment_mode,
+      module_id,
+      modules (
+        id, course_id,
+        courses ( id )
+      )
+    `)
+    .eq('slug', lessonSlug)
+    .single();
+
+  if (!lesson) {
+    return { allowed: false, error: "Lesson not found." };
+  }
+
+  // 2. Fetch the entire course structure to compute the flat sequence
+  const { data: courseData } = await supabase
+    .from("courses")
+    .select(`
+      id,
+      modules (
+        id, order_index,
+        lessons (
+          id, slug, order_index
+        )
+      )
+    `)
+    .eq("id", lesson.modules.courses.id)
+    .single();
+
+  if (!courseData || !courseData.modules) {
+    return { allowed: false, error: "Course structure not found." };
+  }
+
+  // 3. Sort modules and lessons to create flat sequence
+  courseData.modules.sort((a: any, b: any) => a.order_index - b.order_index);
+  const flatLessons: any[] = [];
+  courseData.modules.forEach((m: any) => {
+    m.lessons.sort((a: any, b: any) => a.order_index - b.order_index);
+    m.lessons.forEach((l: any) => flatLessons.push(l));
+  });
+
+  const currentIndex = flatLessons.findIndex(l => l.id === lesson.id);
+
+  if (currentIndex <= 0) {
+    // First lesson in the course is always allowed
+    return { allowed: true, lesson };
+  }
+
+  // 4. Check if the previous lesson is completed
+  const previousLesson = flatLessons[currentIndex - 1];
+  const { data: progress } = await supabase
+    .from('user_lesson_progress')
+    .select('status')
+    .eq('lesson_id', previousLesson.id)
+    .eq('user_id', userId)
+    .single();
+
+  if (progress?.status !== 'completed') {
+    return { allowed: false, error: "Prerequisite lesson not completed. You must follow the curriculum sequentially." };
+  }
+
+  return { allowed: true, lesson };
+}
+
 export async function markLessonComplete(lessonSlug: string) {
   const user = await getUser();
   
@@ -16,14 +87,13 @@ export async function markLessonComplete(lessonSlug: string) {
 
   const supabase = await createClient();
 
-  // Prevent manual completion for graded lessons
-  const { data: lesson } = await supabase
-    .from('lessons')
-    .select('assessment_mode')
-    .eq('slug', lessonSlug)
-    .single();
+  // Validate sequential prerequisite
+  const prereqCheck = await checkLessonPrerequisites(supabase, user.id, lessonSlug);
+  if (!prereqCheck.allowed) {
+    return { success: false, error: prereqCheck.error };
+  }
 
-  if (lesson?.assessment_mode === 'graded') {
+  if (prereqCheck.lesson?.assessment_mode === 'graded') {
     return { success: false, error: "Graded lessons cannot be completed manually." };
   }
 
@@ -33,6 +103,8 @@ export async function markLessonComplete(lessonSlug: string) {
 
   if (result.success) {
     revalidatePath(`/lesson/${lessonSlug}`);
+    revalidatePath('/dashboard');
+    revalidatePath('/learn');
   }
   
   return result;
@@ -49,6 +121,12 @@ export async function submitGradedLesson(lessonId: string, lessonSlug: string, s
 
   try {
     const supabase = await createClient();
+
+    // Validate sequential prerequisite
+    const prereqCheck = await checkLessonPrerequisites(supabase, user.id, lessonSlug);
+    if (!prereqCheck.allowed) {
+      return { success: false, error: prereqCheck.error };
+    }
 
     // 1. Get the current attempt number for this user and lesson
     const { data: previousSubmissions } = await supabase
@@ -138,6 +216,8 @@ export async function submitGradedLesson(lessonId: string, lessonSlug: string, s
     }
 
     revalidatePath(`/lesson/${lessonSlug}`);
+    revalidatePath('/dashboard');
+    revalidatePath('/learn');
     return { success: true, submissionId: submission.id };
 
   } catch (error) {
